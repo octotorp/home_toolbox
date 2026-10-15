@@ -1,12 +1,32 @@
 import 'package:flutter/material.dart';
+import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/tool_item.dart';
+import 'tool_action_dialogs.dart';
 
 /// Екран детальної інформації про інструмент (S-09, FR-10, image7.png)
-class ToolDetailScreen extends StatelessWidget {
+class ToolDetailScreen extends StatefulWidget {
   final ToolItem tool;
 
   const ToolDetailScreen({super.key, required this.tool});
+
+  @override
+  State<ToolDetailScreen> createState() => _ToolDetailScreenState();
+}
+
+class _ToolDetailScreenState extends State<ToolDetailScreen> {
+  late ToolItem _tool;
+
+  @override
+  void initState() {
+    super.initState();
+    // Підтягуємо актуальні дані з репозиторію, якщо є
+    final match = AppConstants.tools.firstWhere(
+      (t) => t.id == widget.tool.id,
+      orElse: () => widget.tool,
+    );
+    _tool = match;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,10 +35,10 @@ class ToolDetailScreen extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => Navigator.of(context).pop(_tool),
         ),
         title: Text(
-          tool.name,
+          _tool.name,
           overflow: TextOverflow.ellipsis,
           style: const TextStyle(
             fontSize: 20,
@@ -28,18 +48,22 @@ class ToolDetailScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.edit_outlined),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Редагування інструмента')),
-              );
+            tooltip: 'Редагувати',
+            onPressed: () async {
+              final updated = await ToolActionDialogs.showEditToolDialog(context, _tool);
+              if (updated != null) {
+                setState(() => _tool = updated);
+              }
             },
           ),
           IconButton(
             icon: const Icon(Icons.delete_outline),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Видалення інструмента')),
-              );
+            tooltip: 'Видалити',
+            onPressed: () async {
+              final deleted = await ToolActionDialogs.showDeleteDialog(context, _tool);
+              if (deleted && mounted) {
+                Navigator.of(context).pop(null);
+              }
             },
           ),
         ],
@@ -70,7 +94,7 @@ class ToolDetailScreen extends StatelessWidget {
                     children: [
                       // Назва інструмента
                       Text(
-                        tool.name,
+                        _tool.name,
                         style: const TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
@@ -89,7 +113,7 @@ class ToolDetailScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Text(
-                              tool.condition,
+                              _tool.condition,
                               style: const TextStyle(
                                 color: Color(0xFF2A3A38),
                                 fontSize: 13,
@@ -101,19 +125,19 @@ class ToolDetailScreen extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                             decoration: BoxDecoration(
-                              color: tool.status == ToolStatus.available
+                              color: _tool.status == ToolStatus.available
                                   ? AppTheme.statusAvailableBg
-                                  : (tool.status == ToolStatus.loaned
+                                  : (_tool.status == ToolStatus.loaned
                                       ? AppTheme.statusLoanedBg
                                       : AppTheme.statusRepairBg),
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Text(
-                              tool.statusTitle,
+                              _tool.statusTitle,
                               style: TextStyle(
-                                color: tool.status == ToolStatus.available
+                                color: _tool.status == ToolStatus.available
                                     ? AppTheme.statusAvailableColor
-                                    : (tool.status == ToolStatus.loaned
+                                    : (_tool.status == ToolStatus.loaned
                                         ? AppTheme.statusLoanedColor
                                         : AppTheme.statusRepairColor),
                                 fontSize: 13,
@@ -129,37 +153,46 @@ class ToolDetailScreen extends StatelessWidget {
                       _buildInfoRow(
                         icon: Icons.build_outlined,
                         label: 'Категорія',
-                        value: tool.category,
+                        value: _tool.category,
                       ),
                       const SizedBox(height: 16),
                       _buildInfoRow(
                         icon: Icons.calendar_today_outlined,
                         label: 'Придбано',
-                        value: tool.purchaseDate ?? '14.03.2023',
+                        value: _tool.purchaseDate ?? '14.03.2023',
                       ),
                       const SizedBox(height: 16),
                       _buildInfoRow(
                         icon: Icons.location_on_outlined,
                         label: 'Місце зберігання',
-                        value: tool.location,
+                        value: _tool.location,
                       ),
                       const SizedBox(height: 16),
                       _buildInfoRow(
                         icon: Icons.edit_note_outlined,
                         label: 'Нотатки',
-                        value: tool.notes ?? 'Комплект свердел у кейсі',
+                        value: _tool.notes ?? 'Комплект свердел у кейсі',
                       ),
+                      if (_tool.status == ToolStatus.loaned && _tool.loanedTo != null) ...[
+                        const SizedBox(height: 16),
+                        _buildInfoRow(
+                          icon: Icons.person_outline,
+                          label: 'Видано позичальнику',
+                          value: '${_tool.loanedTo} (${_tool.expectedReturnDate ?? "термін не вказано"})',
+                        ),
+                      ],
                       const SizedBox(height: 28),
 
-                      // Кнопки дій
+                      // Кнопки дій: Видати / Повернути та Змінити стан
                       Row(
                         children: [
                           Expanded(
                             child: ElevatedButton.icon(
-                              onPressed: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Форма видачі інструмента')),
-                                );
+                              onPressed: () async {
+                                final updated = await ToolActionDialogs.showLoanDialog(context, _tool);
+                                if (updated != null) {
+                                  setState(() => _tool = updated);
+                                }
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppTheme.primaryTeal,
@@ -169,20 +202,23 @@ class ToolDetailScreen extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(24),
                                 ),
                               ),
-                              icon: const Icon(Icons.swap_horiz_rounded),
-                              label: const Text(
-                                'Видати',
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                              icon: Icon(_tool.status == ToolStatus.loaned
+                                  ? Icons.assignment_return_outlined
+                                  : Icons.swap_horiz_rounded),
+                              label: Text(
+                                _tool.status == ToolStatus.loaned ? 'Повернути' : 'Видати',
+                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                               ),
                             ),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: OutlinedButton(
-                              onPressed: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Зміна стану інструмента')),
-                                );
+                              onPressed: () async {
+                                final updated = await ToolActionDialogs.showChangeConditionDialog(context, _tool);
+                                if (updated != null) {
+                                  setState(() => _tool = updated);
+                                }
                               },
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: AppTheme.primaryTeal,
@@ -223,8 +259,8 @@ class ToolDetailScreen extends StatelessWidget {
                             child: const Text(
                               'Усі',
                               style: TextStyle(
-                                fontWeight: FontWeight.bold,
                                 fontSize: 14,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),
@@ -233,46 +269,53 @@ class ToolDetailScreen extends StatelessWidget {
                       const SizedBox(height: 12),
 
                       // Запис історії
-                      Row(
-                        children: [
-                          Container(
-                            width: 48,
-                            height: 48,
-                            decoration: const BoxDecoration(
-                              color: Color(0xFFD1EAE5),
-                              shape: BoxShape.circle,
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF2F7F6),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 44,
+                              height: 44,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFFCCDEDA),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.swap_horiz_rounded,
+                                color: AppTheme.primaryTeal,
+                                size: 22,
+                              ),
                             ),
-                            child: const Icon(
-                              Icons.swap_horiz_rounded,
-                              color: AppTheme.primaryTeal,
-                              size: 24,
-                            ),
-                          ),
-                          const SizedBox(width: 14),
-                          const Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Повернено · стан: добрий',
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w600,
-                                    color: Color(0xFF191C1C),
+                            const SizedBox(width: 14),
+                            const Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Повернено · стан: добрий',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 15,
+                                      color: Color(0xFF191C1C),
+                                    ),
                                   ),
-                                ),
-                                SizedBox(height: 2),
-                                Text(
-                                  'Сусід Андрій · 12.09.2026',
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color: Color(0xFF52605E),
+                                  SizedBox(height: 2),
+                                  Text(
+                                    'Сусід Андрій · 12.09.2026',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: Color(0xFF52605E),
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -281,36 +324,6 @@ class ToolDetailScreen extends StatelessWidget {
             ),
           ),
         ),
-      ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: 1,
-        onDestinationSelected: (index) {
-          if (index == 0) {
-            Navigator.of(context).pop();
-          }
-        },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
-            label: 'Головна',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.handyman_outlined),
-            selectedIcon: Icon(Icons.handyman),
-            label: 'Інструменти',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.location_on_outlined),
-            selectedIcon: Icon(Icons.location_on),
-            label: 'Місця',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person),
-            label: 'Профіль',
-          ),
-        ],
       ),
     );
   }
@@ -323,7 +336,7 @@ class ToolDetailScreen extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 20, color: AppTheme.primaryTeal),
+        Icon(icon, color: AppTheme.primaryTeal, size: 22),
         const SizedBox(width: 14),
         Expanded(
           child: Column(
@@ -341,7 +354,7 @@ class ToolDetailScreen extends StatelessWidget {
                 value,
                 style: const TextStyle(
                   fontSize: 15,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
                   color: Color(0xFF191C1C),
                 ),
               ),

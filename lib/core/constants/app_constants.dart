@@ -100,4 +100,52 @@ class AppConstants {
       serialNumber: 'LAD-3X7',
     ),
   ];
+
+  // In-memory список для інтерактивної роботи інтерфейсу (видача, повернення, редагування, додавання)
+  static List<ToolItem> tools = List<ToolItem>.from(mockTools);
+
+  static void resetTools() {
+    tools = List<ToolItem>.from(mockTools);
+  }
+
+  static void updateTool(ToolItem updated) {
+    final idx = tools.indexWhere((t) => t.id == updated.id);
+    if (idx != -1) {
+      tools[idx] = updated;
+    }
+  }
+
+  static void addTool(ToolItem newTool) {
+    tools.insert(0, newTool);
+  }
+
+  static void deleteTool(String id) {
+    tools.removeWhere((t) => t.id == id);
+  }
+
+  static void loanTool(String id, String toWho, String days) {
+    final idx = tools.indexWhere((t) => t.id == id);
+    if (idx != -1) {
+      final t = tools[idx];
+      tools[idx] = t.copyWith(
+        status: ToolStatus.loaned,
+        loanedTo: toWho,
+        loanedDate: 'сьогодні',
+        expectedReturnDate: '$days днів',
+      );
+    }
+  }
+
+  static void returnTool(String id) {
+    final idx = tools.indexWhere((t) => t.id == id);
+    if (idx != -1) {
+      final t = tools[idx];
+      tools[idx] = t.copyWith(
+        status: ToolStatus.available,
+        loanedTo: null,
+        loanedDate: null,
+        expectedReturnDate: null,
+      );
+    }
+  }
 }

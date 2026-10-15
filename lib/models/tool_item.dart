@@ -46,4 +46,36 @@ class ToolItem {
         return 'Ремонт';
     }
   }
+
+  ToolItem copyWith({
+    String? id,
+    String? name,
+    String? category,
+    String? location,
+    String? condition,
+    ToolStatus? status,
+    String? loanedTo,
+    String? loanedDate,
+    String? expectedReturnDate,
+    String? description,
+    String? serialNumber,
+    String? purchaseDate,
+    String? notes,
+  }) {
+    return ToolItem(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      category: category ?? this.category,
+      location: location ?? this.location,
+      condition: condition ?? this.condition,
+      status: status ?? this.status,
+      loanedTo: loanedTo ?? this.loanedTo,
+      loanedDate: loanedDate ?? this.loanedDate,
+      expectedReturnDate: expectedReturnDate ?? this.expectedReturnDate,
+      description: description ?? this.description,
+      serialNumber: serialNumber ?? this.serialNumber,
+      purchaseDate: purchaseDate ?? this.purchaseDate,
+      notes: notes ?? this.notes,
+    );
+  }
 }

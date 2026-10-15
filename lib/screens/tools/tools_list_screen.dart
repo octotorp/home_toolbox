@@ -7,6 +7,7 @@ import '../../core/widgets/app_navigation_rail.dart';
 import '../home/home_dashboard_screen.dart';
 import '../locations/storage_locations_screen.dart';
 import '../profile/profile_screen.dart';
+import 'tool_action_dialogs.dart';
 import 'tool_detail_screen.dart';
 
 /// Адаптивний екран списку інструментів (S-07 мобільний, S-08 веб/альбомний, FR-09)
@@ -30,7 +31,7 @@ class _ToolsListScreenState extends State<ToolsListScreen> {
   @override
   void initState() {
     super.initState();
-    _selectedTool = AppConstants.mockTools.first;
+    _selectedTool = AppConstants.tools.isNotEmpty ? AppConstants.tools.first : AppConstants.mockTools.first;
   }
 
   @override
@@ -40,7 +41,7 @@ class _ToolsListScreenState extends State<ToolsListScreen> {
   }
 
   List<ToolItem> get _filteredTools {
-    return AppConstants.mockTools.where((tool) {
+    return AppConstants.tools.where((tool) {
       if (widget.initialFilterStatus != null && tool.status != widget.initialFilterStatus) {
         return false;
       }
@@ -83,6 +84,14 @@ class _ToolsListScreenState extends State<ToolsListScreen> {
           children: [
             AppNavigationRail(
               selectedIndex: 1,
+              onAddPressed: () async {
+                final newTool = await ToolActionDialogs.showAddToolDialog(context);
+                if (newTool != null) {
+                  setState(() {
+                    _selectedTool = newTool;
+                  });
+                }
+              },
               onDestinationSelected: (index) {
                 if (index == 1) return;
                 if (index == 0) {
@@ -331,36 +340,48 @@ class _ToolsListScreenState extends State<ToolsListScreen> {
                     const SizedBox(height: 28),
 
                     // Рядок кнопок дій
-                    Row(
+                    Wrap(
+                      spacing: 12,
+                      runSpacing: 10,
                       children: [
                         ElevatedButton.icon(
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Форма видачі інструмента')),
-                            );
+                          onPressed: () async {
+                            final updated = await ToolActionDialogs.showLoanDialog(context, _selectedTool);
+                            if (updated != null) {
+                              setState(() {
+                                _selectedTool = updated;
+                              });
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppTheme.primaryTeal,
                             foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                            padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(24),
                             ),
                           ),
-                          icon: const Icon(Icons.swap_horiz_rounded),
-                          label: const Text('Видати', style: TextStyle(fontWeight: FontWeight.w600)),
+                          icon: Icon(_selectedTool.status == ToolStatus.loaned
+                              ? Icons.assignment_return_outlined
+                              : Icons.swap_horiz_rounded),
+                          label: Text(
+                            _selectedTool.status == ToolStatus.loaned ? 'Повернути' : 'Видати',
+                            style: const TextStyle(fontWeight: FontWeight.w600),
+                          ),
                         ),
-                        const SizedBox(width: 12),
                         OutlinedButton.icon(
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Редагування інструмента')),
-                            );
+                          onPressed: () async {
+                            final updated = await ToolActionDialogs.showEditToolDialog(context, _selectedTool);
+                            if (updated != null) {
+                              setState(() {
+                                _selectedTool = updated;
+                              });
+                            }
                           },
                           style: OutlinedButton.styleFrom(
                             foregroundColor: AppTheme.primaryTeal,
                             side: const BorderSide(color: AppTheme.primaryTeal, width: 1.5),
-                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                            padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(24),
                             ),
@@ -368,17 +389,21 @@ class _ToolsListScreenState extends State<ToolsListScreen> {
                           icon: const Icon(Icons.edit_outlined),
                           label: const Text('Редагувати', style: TextStyle(fontWeight: FontWeight.w600)),
                         ),
-                        const SizedBox(width: 12),
                         OutlinedButton.icon(
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Видалення інструмента')),
-                            );
+                          onPressed: () async {
+                            final deleted = await ToolActionDialogs.showDeleteDialog(context, _selectedTool);
+                            if (deleted) {
+                              setState(() {
+                                _selectedTool = AppConstants.tools.isNotEmpty
+                                    ? AppConstants.tools.first
+                                    : AppConstants.mockTools.first;
+                              });
+                            }
                           },
                           style: OutlinedButton.styleFrom(
                             foregroundColor: const Color(0xFFA82222),
                             side: const BorderSide(color: Color(0xFFA82222), width: 1.5),
-                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                            padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(24),
                             ),
@@ -564,12 +589,18 @@ class _ToolsListScreenState extends State<ToolsListScreen> {
                     final item = filtered[index];
                     return ToolCard(
                       tool: item,
-                      onTap: () {
-                        Navigator.of(context).push(
+                      onTap: () async {
+                        await Navigator.of(context).push(
                           MaterialPageRoute<void>(
                             builder: (context) => ToolDetailScreen(tool: item),
                           ),
                         );
+                        setState(() {
+                          final idx = AppConstants.tools.indexWhere((t) => t.id == _selectedTool.id);
+                          if (idx != -1) {
+                            _selectedTool = AppConstants.tools[idx];
+                          }
+                        });
                       },
                     );
                   },
@@ -595,10 +626,13 @@ class _ToolsListScreenState extends State<ToolsListScreen> {
         ),
         child: IconButton(
           icon: const Icon(Icons.add, color: Colors.white, size: 28),
-          onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Форма додавання нового інструмента')),
-            );
+          onPressed: () async {
+            final newTool = await ToolActionDialogs.showAddToolDialog(context);
+            if (newTool != null) {
+              setState(() {
+                _selectedTool = newTool;
+              });
+            }
           },
         ),
       ),

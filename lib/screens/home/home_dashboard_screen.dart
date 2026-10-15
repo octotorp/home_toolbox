@@ -6,6 +6,7 @@ import '../../core/widgets/stat_card.dart';
 import '../../models/tool_item.dart';
 import '../locations/storage_locations_screen.dart';
 import '../profile/profile_screen.dart';
+import '../tools/tool_action_dialogs.dart';
 import '../tools/tools_list_screen.dart';
 import '../tools/tool_detail_screen.dart';
 
@@ -59,6 +60,12 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
           children: [
             AppNavigationRail(
               selectedIndex: 0,
+              onAddPressed: () async {
+                final newTool = await ToolActionDialogs.showAddToolDialog(context);
+                if (newTool != null) {
+                  setState(() {});
+                }
+              },
               onDestinationSelected: _onRailSelect,
             ),
             Expanded(
@@ -209,10 +216,11 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                         ),
                         const SizedBox(width: 16),
                         OutlinedButton.icon(
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Форма додавання інструмента')),
-                            );
+                          onPressed: () async {
+                            final newTool = await ToolActionDialogs.showAddToolDialog(context);
+                            if (newTool != null) {
+                              setState(() {});
+                            }
                           },
                           icon: const Icon(Icons.add),
                           label: const Text('Додати інструмент'),
@@ -220,9 +228,11 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                         const SizedBox(width: 12),
                         OutlinedButton.icon(
                           onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Форма видачі інструмента')),
-                            );
+                            Navigator.of(context).push(
+                              MaterialPageRoute<void>(
+                                builder: (context) => const ToolsListScreen(),
+                              ),
+                            ).then((_) => setState(() {}));
                           },
                           icon: const Icon(Icons.swap_horiz_rounded),
                           label: const Text('Видати сусіду'),
@@ -546,10 +556,11 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                 children: [
                   Expanded(
                     child: OutlinedButton(
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Форма додавання інструмента')),
-                        );
+                      onPressed: () async {
+                        final newTool = await ToolActionDialogs.showAddToolDialog(context);
+                        if (newTool != null) {
+                          setState(() {});
+                        }
                       },
                       child: const Text('Додати'),
                     ),
@@ -558,9 +569,11 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Форма видачі інструмента')),
-                        );
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (context) => const ToolsListScreen(),
+                          ),
+                        ).then((_) => setState(() {}));
                       },
                       child: const Text('Видати'),
                     ),
@@ -715,10 +728,11 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
         ),
         child: IconButton(
           icon: const Icon(Icons.add, color: Colors.white, size: 28),
-          onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Форма додавання нового інструмента')),
-            );
+          onPressed: () async {
+            final newTool = await ToolActionDialogs.showAddToolDialog(context);
+            if (newTool != null) {
+              setState(() {});
+            }
           },
         ),
       ),
