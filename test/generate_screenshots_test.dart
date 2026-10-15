@@ -10,6 +10,7 @@ import 'package:home_toolbox/core/theme/app_theme.dart';
 import 'package:home_toolbox/screens/auth/login_screen.dart';
 import 'package:home_toolbox/screens/auth/register_screen.dart';
 import 'package:home_toolbox/screens/auth/forgot_password_screen.dart';
+import 'package:home_toolbox/screens/locations/storage_locations_screen.dart';
 import 'package:home_toolbox/screens/profile/profile_screen.dart';
 import 'package:home_toolbox/screens/profile/change_password_screen.dart';
 import 'package:home_toolbox/screens/home/home_dashboard_screen.dart';
@@ -82,39 +83,60 @@ void main() {
   }
 
   testWidgets('Capture screenshots of all screens', (WidgetTester tester) async {
-    // S-01: Login (image1.png)
+    // S-01: Login Mobile (image1.png)
     await captureScreen(
       tester: tester,
       screen: const LoginScreen(),
       fileName: 's01_login.png',
+      size: const Size(412, 892),
     );
 
-    // S-02: Register (image2.png)
+    // S-01-Wide: Login Widescreen Desktop / Web
+    await captureScreen(
+      tester: tester,
+      screen: const LoginScreen(),
+      fileName: 's01_login_widescreen.png',
+      size: const Size(1100, 750),
+    );
+
+    // S-02: Register Mobile (image2.png)
     await captureScreen(
       tester: tester,
       screen: const RegisterScreen(),
       fileName: 's02_register.png',
+      size: const Size(412, 892),
     );
 
-    // S-03: Forgot Password (image3.png)
+    // S-03: Forgot Password Mobile (image3.png)
     await captureScreen(
       tester: tester,
       screen: const ForgotPasswordScreen(),
       fileName: 's03_forgot_password.png',
+      size: const Size(412, 892),
     );
 
-    // S-04: Change Password
+    // S-04: Change Password Mobile
     await captureScreen(
       tester: tester,
       screen: const ChangePasswordScreen(),
       fileName: 's04_change_password.png',
+      size: const Size(412, 892),
     );
 
-    // S-05: Home Dashboard (image5.png)
+    // S-05: Home Dashboard Mobile (image5.png)
     await captureScreen(
       tester: tester,
       screen: const HomeDashboardScreen(),
       fileName: 's05_home_dashboard.png',
+      size: const Size(412, 892),
+    );
+
+    // S-06: Home Dashboard Widescreen Desktop / Web
+    await captureScreen(
+      tester: tester,
+      screen: const HomeDashboardScreen(),
+      fileName: 's06_home_widescreen.png',
+      size: const Size(1100, 750),
     );
 
     // S-07: Tools List Mobile (image6.png)
@@ -122,9 +144,10 @@ void main() {
       tester: tester,
       screen: const ToolsListScreen(),
       fileName: 's07_tools_list.png',
+      size: const Size(412, 892),
     );
 
-    // S-08: Tools Widescreen / Landscape Web (image12.png / media_1792064478940_5109fc34.png)
+    // S-08: Tools Widescreen Desktop / Web (image12.png)
     await captureScreen(
       tester: tester,
       screen: const ToolsListScreen(),
@@ -137,13 +160,39 @@ void main() {
       tester: tester,
       screen: ToolDetailScreen(tool: AppConstants.mockTools[0]),
       fileName: 's09_tool_detail.png',
+      size: const Size(412, 892),
     );
 
-    // S-17: Profile (image4.png)
+    // S-11: Locations Mobile (image11.png)
+    await captureScreen(
+      tester: tester,
+      screen: const StorageLocationsScreen(),
+      fileName: 's11_locations.png',
+      size: const Size(412, 892),
+    );
+
+    // S-12: Locations Widescreen Desktop / Web
+    await captureScreen(
+      tester: tester,
+      screen: const StorageLocationsScreen(),
+      fileName: 's12_locations_widescreen.png',
+      size: const Size(1100, 750),
+    );
+
+    // S-17: Profile Mobile (image4.png)
     await captureScreen(
       tester: tester,
       screen: const ProfileScreen(),
       fileName: 's17_profile.png',
+      size: const Size(412, 892),
+    );
+
+    // S-18: Profile Widescreen Desktop / Web
+    await captureScreen(
+      tester: tester,
+      screen: const ProfileScreen(),
+      fileName: 's18_profile_widescreen.png',
+      size: const Size(1100, 750),
     );
   });
 }

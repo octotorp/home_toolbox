@@ -3,7 +3,9 @@ import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/tool_card.dart';
 import '../../models/tool_item.dart';
+import '../../core/widgets/app_navigation_rail.dart';
 import '../home/home_dashboard_screen.dart';
+import '../locations/storage_locations_screen.dart';
 import '../profile/profile_screen.dart';
 import 'tool_detail_screen.dart';
 
@@ -79,76 +81,24 @@ class _ToolsListScreenState extends State<ToolsListScreen> {
       body: SafeArea(
         child: Row(
           children: [
-            // Ліва панель навігації (Navigation Rail)
-            Container(
-              width: 90,
-              decoration: const BoxDecoration(
-                border: Border(right: BorderSide(color: Color(0xFFE2EBE9), width: 1)),
-              ),
-              child: Column(
-                children: [
-                  const SizedBox(height: 16),
-                  // Кнопка "+" вгорі
-                  Container(
-                    width: 54,
-                    height: 54,
-                    decoration: BoxDecoration(
-                      color: AppTheme.primaryTeal,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.add, color: Colors.white, size: 28),
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Додавання нового інструмента')),
-                        );
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 36),
-
-                  // Елементи навігації
-                  _buildRailItem(
-                    icon: Icons.home_outlined,
-                    label: 'Головна',
-                    isSelected: false,
-                    onTap: () {
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute<void>(
-                          builder: (context) => const HomeDashboardScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  _buildRailItem(
-                    icon: Icons.build_rounded,
-                    label: 'Інструм.',
-                    isSelected: true,
-                    onTap: () {},
-                  ),
-                  const SizedBox(height: 20),
-                  _buildRailItem(
-                    icon: Icons.location_on_outlined,
-                    label: 'Місця',
-                    isSelected: false,
-                    onTap: () {},
-                  ),
-                  const SizedBox(height: 20),
-                  _buildRailItem(
-                    icon: Icons.person_outline,
-                    label: 'Профіль',
-                    isSelected: false,
-                    onTap: () {
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute<void>(
-                          builder: (context) => const ProfileScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
+            AppNavigationRail(
+              selectedIndex: 1,
+              onDestinationSelected: (index) {
+                if (index == 1) return;
+                if (index == 0) {
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute<void>(builder: (context) => const HomeDashboardScreen()),
+                  );
+                } else if (index == 2) {
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute<void>(builder: (context) => const StorageLocationsScreen()),
+                  );
+                } else if (index == 3) {
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute<void>(builder: (context) => const ProfileScreen()),
+                  );
+                }
+              },
             ),
 
             // Середня колонка: Список інструментів
