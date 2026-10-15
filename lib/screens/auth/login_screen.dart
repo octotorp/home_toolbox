@@ -6,7 +6,7 @@ import '../home/home_dashboard_screen.dart';
 import 'register_screen.dart';
 import 'forgot_password_screen.dart';
 
-/// Екран авторизації користувача (S-01, FR-02)
+/// Екран авторизації користувача (S-01, FR-02, image1.png)
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -15,8 +15,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _emailController = TextEditingController(text: 'vlad.prokopiv@lpnu.ua');
-  final _passwordController = TextEditingController(text: 'Password123!');
+  final _emailController = TextEditingController(text: 'vlad@example.com');
+  final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
 
@@ -28,10 +28,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _handleLogin() {
-    // Відповідно до вимог Лабораторної роботи №3 (п. 4.1):
-    // Кнопка "Увійти" відкриває наступний екран домашньої сторінки без обов'язкової інтеграції із бекендом
     setState(() => _isLoading = true);
-    Future.delayed(const Duration(milliseconds: 400), () {
+    Future.delayed(const Duration(milliseconds: 300), () {
       if (mounted) {
         setState(() => _isLoading = false);
         Navigator.of(context).pushReplacement(
@@ -46,10 +44,11 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.scaffoldBackgroundColor,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 420),
               child: Form(
@@ -58,46 +57,42 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Логотип та назва застосунку
+                    // Кругла емблема застосунку (image1.png)
                     Center(
                       child: Container(
-                        width: 80,
-                        height: 80,
-                        decoration: BoxDecoration(
-                          color: AppTheme.primarySeedColor,
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppTheme.primarySeedColor.withValues(alpha: 0.3),
-                              blurRadius: 16,
-                              offset: const Offset(0, 8),
-                            ),
-                          ],
+                        width: 96,
+                        height: 96,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFD1EAE5),
+                          shape: BoxShape.circle,
                         ),
                         child: const Icon(
-                          Icons.home_repair_service_rounded,
-                          color: Colors.white,
+                          Icons.build_rounded,
+                          color: AppTheme.primaryTeal,
                           size: 44,
                         ),
                       ),
                     ),
                     const SizedBox(height: 24),
+
+                    // Назва застосунку
                     const Text(
-                      'Home Toolbox',
+                      'Домашня комора',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF191C1C),
+                        letterSpacing: -0.3,
                       ),
                     ),
                     const SizedBox(height: 8),
                     const Text(
-                      'Каталог та облік домашніх інструментів',
+                      'Каталог домашніх інструментів',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 15,
-                        color: Color(0xFF6F7978),
+                        fontSize: 16,
+                        color: Color(0xFF52605E),
                       ),
                     ),
                     const SizedBox(height: 36),
@@ -106,8 +101,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     AppTextField(
                       controller: _emailController,
                       label: 'Електронна пошта',
-                      hint: 'example@domain.com',
-                      prefixIcon: Icons.email_outlined,
                       keyboardType: TextInputType.emailAddress,
                     ),
                     const SizedBox(height: 18),
@@ -116,13 +109,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     AppTextField(
                       controller: _passwordController,
                       label: 'Пароль',
-                      hint: '••••••••',
-                      prefixIcon: Icons.lock_outline,
                       isPassword: true,
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 10),
 
-                    // Посилання на відновлення пароля
+                    // Забули пароль
                     Align(
                       alignment: Alignment.centerRight,
                       child: TextButton(
@@ -133,43 +124,62 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           );
                         },
-                        child: const Text('Забули пароль?'),
+                        style: TextButton.styleFrom(
+                          foregroundColor: AppTheme.primaryTeal,
+                          padding: EdgeInsets.zero,
+                        ),
+                        child: const Text(
+                          'Забули пароль?',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 20),
-
-                    // Кнопка входу
-                    PrimaryButton(
-                      text: 'Увійти',
-                      icon: Icons.login,
-                      isLoading: _isLoading,
-                      onPressed: _handleLogin,
                     ),
                     const SizedBox(height: 24),
 
-                    // Посилання на реєстрацію
-                    Wrap(
-                      alignment: WrapAlignment.center,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        const Text(
-                          'Немає облікового запису?',
-                          style: TextStyle(color: Color(0xFF6F7978)),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute<void>(
-                                builder: (context) => const RegisterScreen(),
-                              ),
-                            );
-                          },
-                          child: const Text(
-                            'Зареєструватися',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                    // Кнопка Увійти
+                    PrimaryButton(
+                      text: 'Увійти',
+                      isLoading: _isLoading,
+                      onPressed: _handleLogin,
+                    ),
+                    const SizedBox(height: 48),
+
+                    // Немає акаунта? Створити акаунт
+                    Center(
+                      child: Column(
+                        children: [
+                          const Text(
+                            'Немає акаунта?',
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: Color(0xFF52605E),
+                            ),
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 4),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute<void>(
+                                  builder: (context) => const RegisterScreen(),
+                                ),
+                              );
+                            },
+                            style: TextButton.styleFrom(
+                              foregroundColor: AppTheme.primaryTeal,
+                            ),
+                            child: const Text(
+                              'Створити акаунт',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),

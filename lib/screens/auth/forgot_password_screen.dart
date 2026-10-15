@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_text_field.dart';
 import '../../core/widgets/primary_button.dart';
 
-/// Екран відновлення пароля через електронну пошту (S-03, FR-03)
+/// Екран відновлення пароля (S-03, FR-03, image3.png)
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
 
@@ -11,9 +12,8 @@ class ForgotPasswordScreen extends StatefulWidget {
 }
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
-  final _emailController = TextEditingController(text: 'vlad.prokopiv@lpnu.ua');
+  final _emailController = TextEditingController(text: 'vlad@example.com');
   bool _isLoading = false;
-  bool _isSent = false;
 
   @override
   void dispose() {
@@ -23,12 +23,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   void _handleReset() {
     setState(() => _isLoading = true);
-    Future.delayed(const Duration(milliseconds: 400), () {
+    Future.delayed(const Duration(milliseconds: 300), () {
       if (mounted) {
-        setState(() {
-          _isLoading = false;
-          _isSent = true;
-        });
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Посилання на відновлення надіслано на вашу пошту!')),
+        );
       }
     });
   }
@@ -36,8 +36,19 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Відновлення пароля'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: const Text(
+          'Відновлення пароля',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
       body: SafeArea(
         child: Center(
@@ -48,74 +59,69 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Icon(
-                    Icons.mark_email_read_outlined,
-                    size: 64,
-                    color: Color(0xFF006A6A),
+                  Center(
+                    child: Container(
+                      width: 96,
+                      height: 96,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFD1EAE5),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.mail_outline_rounded,
+                        color: AppTheme.primaryTeal,
+                        size: 44,
+                      ),
+                    ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 28),
                   const Text(
-                    'Забули свій пароль?',
+                    'Забули пароль?',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 22,
+                      fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF191C1C),
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 12),
                   const Text(
-                    'Вкажіть адресу електронної пошти, привʼязану до вашого акаунту. Ми надішлемо вам інструкцію для скидання пароля.',
+                    'Вкажіть електронну пошту — ми надішлемо посилання для створення нового пароля.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: Color(0xFF6F7978)),
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: Color(0xFF52605E),
+                      height: 1.4,
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  AppTextField(
+                    controller: _emailController,
+                    label: 'Електронна пошта',
+                    keyboardType: TextInputType.emailAddress,
                   ),
                   const SizedBox(height: 28),
-
-                  if (!_isSent) ...[
-                    AppTextField(
-                      controller: _emailController,
-                      label: 'Електронна пошта',
-                      hint: 'example@domain.com',
-                      prefixIcon: Icons.email_outlined,
-                      keyboardType: TextInputType.emailAddress,
-                    ),
-                    const SizedBox(height: 24),
-                    PrimaryButton(
-                      text: 'Надіслати посилання',
-                      icon: Icons.send_rounded,
-                      isLoading: _isLoading,
-                      onPressed: _handleReset,
-                    ),
-                  ] else ...[
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE8F5E9),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFF2E7D32).withValues(alpha: 0.3)),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.check_circle, color: Color(0xFF2E7D32)),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              'Посилання для відновлення надіслано на ${_emailController.text}!',
-                              style: const TextStyle(
-                                color: Color(0xFF1B5E20),
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    OutlinedButton(
+                  PrimaryButton(
+                    text: 'Надіслати посилання',
+                    isLoading: _isLoading,
+                    onPressed: _handleReset,
+                  ),
+                  const SizedBox(height: 24),
+                  Center(
+                    child: TextButton(
                       onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('Повернутися до входу'),
+                      style: TextButton.styleFrom(
+                        foregroundColor: AppTheme.primaryTeal,
+                      ),
+                      child: const Text(
+                        'Повернутися до входу',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
-                  ],
+                  ),
                 ],
               ),
             ),

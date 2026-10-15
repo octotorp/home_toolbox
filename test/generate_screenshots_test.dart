@@ -51,8 +51,9 @@ void main() {
     required WidgetTester tester,
     required Widget screen,
     required String fileName,
+    Size size = const Size(412, 892),
   }) async {
-    tester.view.physicalSize = const Size(412, 892);
+    tester.view.physicalSize = size;
     tester.view.devicePixelRatio = 1.0;
 
     final boundaryKey = GlobalKey();
@@ -81,21 +82,21 @@ void main() {
   }
 
   testWidgets('Capture screenshots of all screens', (WidgetTester tester) async {
-    // S-01: Login
+    // S-01: Login (image1.png)
     await captureScreen(
       tester: tester,
       screen: const LoginScreen(),
       fileName: 's01_login.png',
     );
 
-    // S-02: Register
+    // S-02: Register (image2.png)
     await captureScreen(
       tester: tester,
       screen: const RegisterScreen(),
       fileName: 's02_register.png',
     );
 
-    // S-03: Forgot Password
+    // S-03: Forgot Password (image3.png)
     await captureScreen(
       tester: tester,
       screen: const ForgotPasswordScreen(),
@@ -109,28 +110,36 @@ void main() {
       fileName: 's04_change_password.png',
     );
 
-    // S-05: Home Dashboard
+    // S-05: Home Dashboard (image5.png)
     await captureScreen(
       tester: tester,
       screen: const HomeDashboardScreen(),
       fileName: 's05_home_dashboard.png',
     );
 
-    // S-07: Tools List
+    // S-07: Tools List Mobile (image6.png)
     await captureScreen(
       tester: tester,
       screen: const ToolsListScreen(),
       fileName: 's07_tools_list.png',
     );
 
-    // S-09: Tool Detail
+    // S-08: Tools Widescreen / Landscape Web (image12.png / media_1792064478940_5109fc34.png)
     await captureScreen(
       tester: tester,
-      screen: ToolDetailScreen(tool: AppConstants.mockTools[1]),
+      screen: const ToolsListScreen(),
+      fileName: 's08_tools_widescreen.png',
+      size: const Size(1100, 750),
+    );
+
+    // S-09: Tool Detail Mobile (image7.png)
+    await captureScreen(
+      tester: tester,
+      screen: ToolDetailScreen(tool: AppConstants.mockTools[0]),
       fileName: 's09_tool_detail.png',
     );
 
-    // S-17: Profile
+    // S-17: Profile (image4.png)
     await captureScreen(
       tester: tester,
       screen: const ProfileScreen(),

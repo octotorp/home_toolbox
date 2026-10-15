@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
 
-/// Віджет статистичної картки показника на головному дашборді.
+/// Віджет статистичної картки показника на головному дашборді (image5.png).
 class StatCard extends StatelessWidget {
   final String title;
   final String count;
-  final IconData icon;
   final Color backgroundColor;
-  final Color iconColor;
+  final Color textColor;
   final VoidCallback? onTap;
 
   const StatCard({
     super.key,
     required this.title,
     required this.count,
-    required this.icon,
     required this.backgroundColor,
-    required this.iconColor,
+    required this.textColor,
     this.onTap,
   });
 
@@ -26,36 +24,32 @@ class StatCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+          height: 96,
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
           decoration: BoxDecoration(
             color: backgroundColor,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: iconColor.withValues(alpha: 0.2)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Icon(icon, color: iconColor, size: 24),
-                  Text(
-                    count,
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: iconColor,
-                    ),
-                  ),
-                ],
+              Text(
+                count,
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: textColor,
+                  height: 1.1,
+                ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 6),
               Text(
                 title,
-                style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF3F4948),
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: textColor,
                 ),
               ),
             ],

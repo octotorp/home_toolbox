@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-/// Базовий перевикористовуваний віджет текстового поля введення.
-/// Підтримує суфіксні дії (очищення або приховування/показ пароля), валідацію та іконки.
+/// Базовий перевикористовуваний віджет текстового поля введення у стилі Material 3 (контурні рамки).
+/// Підтримує вбудовану мітку (floating label), суфіксне приховування/показ пароля, валідацію.
 class AppTextField extends StatefulWidget {
   final TextEditingController? controller;
   final String label;
@@ -41,44 +41,35 @@ class _AppTextFieldState extends State<AppTextField> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          widget.label,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF191C1C),
-          ),
-        ),
-        const SizedBox(height: 6),
-        TextFormField(
-          controller: widget.controller,
-          obscureText: _obscureText,
-          keyboardType: widget.keyboardType,
-          maxLines: widget.isPassword ? 1 : widget.maxLines,
-          validator: widget.validator,
-          onChanged: widget.onChanged,
-          decoration: InputDecoration(
-            hintText: widget.hint,
-            prefixIcon: widget.prefixIcon != null ? Icon(widget.prefixIcon) : null,
-            suffixIcon: widget.isPassword
-                ? IconButton(
-                    icon: Icon(
-                      _obscureText ? Icons.visibility_off : Icons.visibility,
-                      color: const Color(0xFF6F7978),
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _obscureText = !_obscureText;
-                      });
-                    },
-                  )
-                : null,
-          ),
-        ),
-      ],
+    return TextFormField(
+      controller: widget.controller,
+      obscureText: _obscureText,
+      keyboardType: widget.keyboardType,
+      maxLines: widget.isPassword ? 1 : widget.maxLines,
+      validator: widget.validator,
+      onChanged: widget.onChanged,
+      style: const TextStyle(
+        fontSize: 16,
+        color: Color(0xFF191C1C),
+      ),
+      decoration: InputDecoration(
+        labelText: widget.label,
+        hintText: widget.hint,
+        prefixIcon: widget.prefixIcon != null ? Icon(widget.prefixIcon) : null,
+        suffixIcon: widget.isPassword
+            ? IconButton(
+                icon: Icon(
+                  _obscureText ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                  color: const Color(0xFF52605E),
+                ),
+                onPressed: () {
+                  setState(() {
+                    _obscureText = !_obscureText;
+                  });
+                },
+              )
+            : null,
+      ),
     );
   }
 }

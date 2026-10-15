@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Перевикористовувана кнопка дії у стилі Material Design 3.
+/// Перевикористовувана кнопка дії у стилі Material Design 3 (округла пігулка, borderRadius: 24).
 /// Підтримує стан завантаження (loading) та іконку.
 class PrimaryButton extends StatelessWidget {
   final String text;
@@ -28,8 +28,9 @@ class PrimaryButton extends StatelessWidget {
         backgroundColor: backgroundColor ?? Theme.of(context).colorScheme.primary,
         foregroundColor: foregroundColor ?? Colors.white,
         elevation: 0,
+        minimumSize: const Size.fromHeight(50),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(25),
         ),
       ),
       child: isLoading

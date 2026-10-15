@@ -7,9 +7,9 @@ void main() {
     // Побудова застосунку
     await tester.pumpWidget(const HomeToolboxApp());
 
-    // Перевірка наявності екрана авторизації та заголовка
+    // Перевірка наявності екрана авторизації та заголовка "Домашня комора"
     expect(find.byType(LoginScreen), findsOneWidget);
-    expect(find.text('Home Toolbox'), findsOneWidget);
+    expect(find.text('Домашня комора'), findsOneWidget);
     expect(find.text('Увійти'), findsOneWidget);
   });
 }

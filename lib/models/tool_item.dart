@@ -1,10 +1,10 @@
 enum ToolStatus {
-  available, // В наявності
+  available, // В наявності / На місці
   loaned,    // Видано / позичено
-  inRepair,  // В ремонті
+  inRepair,  // В ремонті / Ремонт
 }
 
-/// Модель інструмента у каталозі
+/// Модель інструмента у каталозі домашніх інструментів
 class ToolItem {
   final String id;
   final String name;
@@ -17,6 +17,8 @@ class ToolItem {
   final String? expectedReturnDate;
   final String description;
   final String? serialNumber;
+  final String? purchaseDate;
+  final String? notes;
 
   const ToolItem({
     required this.id,
@@ -30,16 +32,18 @@ class ToolItem {
     this.expectedReturnDate,
     required this.description,
     this.serialNumber,
+    this.purchaseDate,
+    this.notes,
   });
 
   String get statusTitle {
     switch (status) {
       case ToolStatus.available:
-        return 'В наявності';
+        return 'На місці';
       case ToolStatus.loaned:
         return 'Видано';
       case ToolStatus.inRepair:
-        return 'В ремонті';
+        return 'Ремонт';
     }
   }
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/tool_item.dart';
 
-/// Екран детальної інформації про інструмент (S-09, FR-10)
+/// Екран детальної інформації про інструмент (S-09, FR-10, image7.png)
 class ToolDetailScreen extends StatelessWidget {
   final ToolItem tool;
 
@@ -11,78 +11,65 @@ class ToolDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Деталі інструмента'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Text(
+          tool.name,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit_outlined),
-            tooltip: 'Редагувати',
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Режим редагування інструмента')),
+                const SnackBar(content: Text('Редагування інструмента')),
               );
             },
           ),
           IconButton(
-            icon: const Icon(Icons.delete_outline, color: AppTheme.statusRepairColor),
-            tooltip: 'Видалити',
+            icon: const Icon(Icons.delete_outline),
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Діалог видалення інструмента')),
+                const SnackBar(content: Text('Видалення інструмента')),
               );
             },
           ),
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
         child: Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 600),
+            constraints: const BoxConstraints(maxWidth: 520),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Блок зображення / банера інструмента
+                // Блок зображення / заглушки фото (image7.png)
                 Container(
                   height: 180,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE8F5F5),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          tool.category == 'Електроінструмент'
-                              ? Icons.power
-                              : (tool.category == 'Ручний інструмент'
-                                  ? Icons.handyman
-                                  : Icons.build),
-                          size: 64,
-                          color: AppTheme.primarySeedColor,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          tool.category,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: AppTheme.primarySeedColor,
-                          ),
-                        ),
-                      ],
+                  color: const Color(0xFFBFD8D5),
+                  child: const Center(
+                    child: Icon(
+                      Icons.image_outlined,
+                      size: 60,
+                      color: AppTheme.primaryTeal,
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
-
-                // Назва та бейдж статусу
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Text(
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Назва інструмента
+                      Text(
                         tool.name,
                         style: const TextStyle(
                           fontSize: 22,
@@ -90,186 +77,273 @@ class ToolDetailScreen extends StatelessWidget {
                           color: Color(0xFF191C1C),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: tool.status == ToolStatus.available
-                            ? AppTheme.statusAvailableBg
-                            : (tool.status == ToolStatus.loaned
-                                ? AppTheme.statusLoanedBg
-                                : AppTheme.statusRepairBg),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        tool.statusTitle,
-                        style: TextStyle(
-                          color: tool.status == ToolStatus.available
-                              ? AppTheme.statusAvailableColor
-                              : (tool.status == ToolStatus.loaned
-                                  ? AppTheme.statusLoanedColor
-                                  : AppTheme.statusRepairColor),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
+                      const SizedBox(height: 12),
 
-                // Інформаційні блоки
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      children: [
-                        _buildDetailItem(
-                          icon: Icons.location_on_outlined,
-                          title: 'Місце зберігання',
-                          value: tool.location,
-                        ),
-                        const Divider(height: 20),
-                        _buildDetailItem(
-                          icon: Icons.health_and_safety_outlined,
-                          title: 'Технічний стан',
-                          value: tool.condition,
-                        ),
-                        if (tool.serialNumber != null) ...[
-                          const Divider(height: 20),
-                          _buildDetailItem(
-                            icon: Icons.qr_code_2_outlined,
-                            title: 'Серійний номер',
-                            value: tool.serialNumber!,
+                      // Бейджі: Стан та Статус
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFDDE7E5),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              tool.condition,
+                              style: const TextStyle(
+                                color: Color(0xFF2A3A38),
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: tool.status == ToolStatus.available
+                                  ? AppTheme.statusAvailableBg
+                                  : (tool.status == ToolStatus.loaned
+                                      ? AppTheme.statusLoanedBg
+                                      : AppTheme.statusRepairBg),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              tool.statusTitle,
+                              style: TextStyle(
+                                color: tool.status == ToolStatus.available
+                                    ? AppTheme.statusAvailableColor
+                                    : (tool.status == ToolStatus.loaned
+                                        ? AppTheme.statusLoanedColor
+                                        : AppTheme.statusRepairColor),
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ),
                         ],
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
+                      ),
+                      const SizedBox(height: 24),
 
-                // Опис
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Опис та характеристики',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF191C1C),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          tool.description,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Color(0xFF3F4948),
-                            height: 1.4,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
+                      // Поля метаданих
+                      _buildInfoRow(
+                        icon: Icons.build_outlined,
+                        label: 'Категорія',
+                        value: tool.category,
+                      ),
+                      const SizedBox(height: 16),
+                      _buildInfoRow(
+                        icon: Icons.calendar_today_outlined,
+                        label: 'Придбано',
+                        value: tool.purchaseDate ?? '14.03.2023',
+                      ),
+                      const SizedBox(height: 16),
+                      _buildInfoRow(
+                        icon: Icons.location_on_outlined,
+                        label: 'Місце зберігання',
+                        value: tool.location,
+                      ),
+                      const SizedBox(height: 16),
+                      _buildInfoRow(
+                        icon: Icons.edit_note_outlined,
+                        label: 'Нотатки',
+                        value: tool.notes ?? 'Комплект свердел у кейсі',
+                      ),
+                      const SizedBox(height: 28),
 
-                // Якщо видано - блок інформації про позику
-                if (tool.status == ToolStatus.loaned && tool.loanedTo != null) ...[
-                  Card(
-                    color: AppTheme.statusLoanedBg,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      side: BorderSide(color: AppTheme.statusLoanedColor.withValues(alpha: 0.3)),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      // Кнопки дій
+                      Row(
                         children: [
-                          const Row(
-                            children: [
-                              Icon(Icons.info_outline, color: AppTheme.statusLoanedColor, size: 20),
-                              SizedBox(width: 8),
-                              Text(
-                                'Інформація про позику',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: AppTheme.statusLoanedColor,
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              onPressed: () {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Форма видачі інструмента')),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppTheme.primaryTeal,
+                                foregroundColor: Colors.white,
+                                minimumSize: const Size.fromHeight(48),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(24),
                                 ),
                               ),
-                            ],
+                              icon: const Icon(Icons.swap_horiz_rounded),
+                              label: const Text(
+                                'Видати',
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                              ),
+                            ),
                           ),
-                          const SizedBox(height: 8),
-                          Text('Отримувач: ${tool.loanedTo}'),
-                          Text('Дата видачі: ${tool.loanedDate ?? "—"}'),
-                          Text('Очікуване повернення: ${tool.expectedReturnDate ?? "—"}'),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed: () {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Зміна стану інструмента')),
+                                );
+                              },
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: AppTheme.primaryTeal,
+                                side: const BorderSide(color: AppTheme.primaryTeal, width: 1.5),
+                                minimumSize: const Size.fromHeight(48),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(24),
+                                ),
+                              ),
+                              child: const Text(
+                                'Змінити стан',
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                              ),
+                            ),
+                          ),
                         ],
                       ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                ],
+                      const SizedBox(height: 28),
 
-                // Кнопки швидкої дії
-                if (tool.status == ToolStatus.available)
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Відкрито форму видачі інструмента')),
-                      );
-                    },
-                    icon: const Icon(Icons.outbox_rounded),
-                    label: const Text('Видати інструмент'),
-                  )
-                else if (tool.status == ToolStatus.loaned)
-                  ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.statusAvailableColor,
-                    ),
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Інструмент успішно повернено на місце!')),
-                      );
-                    },
-                    icon: const Icon(Icons.move_to_inbox_rounded),
-                    label: const Text('Підтвердити повернення'),
+                      // Історія використання
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Історія використання',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF191C1C),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {},
+                            style: TextButton.styleFrom(
+                              foregroundColor: AppTheme.primaryTeal,
+                              padding: EdgeInsets.zero,
+                            ),
+                            child: const Text(
+                              'Усі',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Запис історії
+                      Row(
+                        children: [
+                          Container(
+                            width: 48,
+                            height: 48,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFD1EAE5),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.swap_horiz_rounded,
+                              color: AppTheme.primaryTeal,
+                              size: 24,
+                            ),
+                          ),
+                          const SizedBox(width: 14),
+                          const Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Повернено · стан: добрий',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xFF191C1C),
+                                  ),
+                                ),
+                                SizedBox(height: 2),
+                                Text(
+                                  'Сусід Андрій · 12.09.2026',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Color(0xFF52605E),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
+                ),
               ],
             ),
           ),
         ),
       ),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: 1,
+        onDestinationSelected: (index) {
+          if (index == 0) {
+            Navigator.of(context).pop();
+          }
+        },
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home),
+            label: 'Головна',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.handyman_outlined),
+            selectedIcon: Icon(Icons.handyman),
+            label: 'Інструменти',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.location_on_outlined),
+            selectedIcon: Icon(Icons.location_on),
+            label: 'Місця',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline),
+            selectedIcon: Icon(Icons.person),
+            label: 'Профіль',
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildDetailItem({
+  Widget _buildInfoRow({
     required IconData icon,
-    required String title,
+    required String label,
     required String value,
   }) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 20, color: const Color(0xFF6F7978)),
-        const SizedBox(width: 12),
+        Icon(icon, size: 20, color: AppTheme.primaryTeal),
+        const SizedBox(width: 14),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                title,
-                style: const TextStyle(fontSize: 12, color: Color(0xFF6F7978)),
+                label,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: Color(0xFF52605E),
+                ),
               ),
               const SizedBox(height: 2),
               Text(
                 value,
-                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF191C1C),
+                ),
               ),
             ],
           ),
