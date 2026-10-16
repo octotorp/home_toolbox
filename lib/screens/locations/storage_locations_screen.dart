@@ -149,6 +149,7 @@ class _StorageLocationsScreenState extends State<StorageLocationsScreen> {
     return Scaffold(
       backgroundColor: AppTheme.scaffoldBackgroundColor,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text(
           'Місця зберігання',
           style: TextStyle(
@@ -200,6 +201,7 @@ class _StorageLocationsScreenState extends State<StorageLocationsScreen> {
       bottomNavigationBar: NavigationBar(
         selectedIndex: _navIndex,
         onDestinationSelected: (index) {
+          if (index == _navIndex) return;
           setState(() => _navIndex = index);
           if (index == 0) {
             Navigator.of(context).pushReplacement(

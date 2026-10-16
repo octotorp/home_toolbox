@@ -398,6 +398,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       bottomNavigationBar: NavigationBar(
         selectedIndex: _navIndex,
         onDestinationSelected: (index) {
+          if (index == _navIndex) return;
           setState(() => _navIndex = index);
           if (index == 0) {
             Navigator.of(context).pushReplacement(

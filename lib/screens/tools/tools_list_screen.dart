@@ -483,6 +483,7 @@ class _ToolsListScreenState extends State<ToolsListScreen> {
     return Scaffold(
       backgroundColor: AppTheme.scaffoldBackgroundColor,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text(
           'Інструменти',
           style: TextStyle(
@@ -639,11 +640,18 @@ class _ToolsListScreenState extends State<ToolsListScreen> {
       bottomNavigationBar: NavigationBar(
         selectedIndex: _navIndex,
         onDestinationSelected: (index) {
+          if (index == _navIndex) return;
           setState(() => _navIndex = index);
           if (index == 0) {
             Navigator.of(context).pushReplacement(
               MaterialPageRoute<void>(
                 builder: (context) => const HomeDashboardScreen(),
+              ),
+            );
+          } else if (index == 2) {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute<void>(
+                builder: (context) => const StorageLocationsScreen(),
               ),
             );
           } else if (index == 3) {
@@ -680,6 +688,7 @@ class _ToolsListScreenState extends State<ToolsListScreen> {
     );
   }
 
+  // ignore: unused_element
   Widget _buildRailItem({
     required IconData icon,
     required String label,

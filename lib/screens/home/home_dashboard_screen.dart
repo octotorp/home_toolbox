@@ -739,21 +739,22 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
       bottomNavigationBar: NavigationBar(
         selectedIndex: _navIndex,
         onDestinationSelected: (index) {
+          if (index == _navIndex) return;
           setState(() => _navIndex = index);
           if (index == 1) {
-            Navigator.of(context).push(
+            Navigator.of(context).pushReplacement(
               MaterialPageRoute<void>(
                 builder: (context) => const ToolsListScreen(),
               ),
             );
           } else if (index == 2) {
-            Navigator.of(context).push(
+            Navigator.of(context).pushReplacement(
               MaterialPageRoute<void>(
                 builder: (context) => const StorageLocationsScreen(),
               ),
             );
           } else if (index == 3) {
-            Navigator.of(context).push(
+            Navigator.of(context).pushReplacement(
               MaterialPageRoute<void>(
                 builder: (context) => const ProfileScreen(),
               ),
